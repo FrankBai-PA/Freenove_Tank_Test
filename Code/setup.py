@@ -159,9 +159,9 @@ def main():
     
     print("Installing APT packages...")
     install_status["python3-dev python3-pyqt5"] = apt_install("python3-dev python3-pyqt5")
+    install_status["pigpio"] = apt_install("python3-pigpio")
 
     print("Checking and installing Python packages...")
-    install_status["pigpio"] = check_and_install("pigpio")
     install_status["gpiozero"] = check_and_install("gpiozero")
     install_status["numpy"] = check_and_install("numpy")
     install_status["rpi-hardware-pwm --break-system-packages"] = check_and_install("rpi-hardware-pwm --break-system-packages")
