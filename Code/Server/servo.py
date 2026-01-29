@@ -107,7 +107,7 @@ class Servo:
         self.pi_version = self.param.get_raspberry_pi_version()  # Get Raspberry Pi version
 
         if self.pcb_version == 1 and self.pi_version == 1:
-            self.pwm = PigpioServo()  # Use PigpioServo for PCB version 1 and Raspberry Pi version 1
+            self.pwm = GpiozeroServo()  # Use GpiozeroServo for PCB version 1 and Raspberry Pi version 1
         elif self.pcb_version == 1 and self.pi_version == 2:
             self.pwm = GpiozeroServo()  # Use GpiozeroServo for PCB version 1 and Raspberry Pi version 2
         elif self.pcb_version == 2 and self.pi_version == 1:
