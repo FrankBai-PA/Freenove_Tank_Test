@@ -36,15 +36,15 @@
 ### Note:
 
  1. For PCB V1.0, if you are using a Raspberry Pi 4, the code will automatically use the rpi_ws281x library to drive the LED. If you are using a Raspberry Pi 5, the LED cannot be used because the rpi_ws281x library is not supported on the Raspberry Pi 5.
- 2. For PCB V1.0, if you are using a Raspberry Pi 4, the code will automatically use the pigpio library to drive the servos. If you are using a Raspberry Pi 5, the code will automatically use the gpiozero library to drive the servos.
+ 2. For PCB V1.0, the code will automatically use the gpiozero library to drive the servos.
  3. For PCB V2.0, hardware SPI is used to drive the LED, and hardware PWM is used to control the servos.
- 4. In the Raspberry Pi 5, the pigpio library cannot be used, and some functions of the rpi library are also not available in the bookworm system. Therefore, only the gpiozero library can be used to drive the servos, which may result in imperfect servo performance, occasionally causing jitter.
+ 4. In the Trixie system, the pigpio library cannot be used, and some functions of the rpi library are also not available in the trixie system. Therefore, only the gpiozero library can be used to drive the servos, which may result in imperfect servo performance, occasionally causing jitter.
 
 ### Recommendation:
 
  1. If your PCB version is V1.0, we recommend using it with a Raspberry Pi 4 for better performance. Using a Raspberry Pi 5 is also possible, but the performance will be slightly worse.
- 2. If your PCB version is V2.0, we recommend using it with a Raspberry Pi 5 for better performance. Using a Raspberry Pi 4 is also possible, and the performance will be similar to that of the Raspberry Pi 5.
-
+ 2. If your PCB version is V2.0, we recommend using it with a Raspberry Pi 4/5 for better performance.
+ 
 ### Support
 
 Freenove provides free and quick customer support. Including but not limited to:
