@@ -34,19 +34,18 @@ class RedBallFollower:
         self.center_tolerance = 50  # Pixels from center to consider "centered"
         self.base_speed = 1500  # Base forward speed
         self.turn_speed = 2000  # Turn speed when ball is off-center
+
+        # Display window (set to False for headless runs)
+        self.show_window = True
         
         print("Red Ball Follower initialized. Press Ctrl+C to stop.")
     
-    def detect_red_ball(self, frame):
+    def detect_red_ball(self, img):
         """
-        Detect red ball in the frame.
+        Detect red ball in the image (BGR).
         Returns: (found, center_x, center_y, area) tuple
         """
         try:
-            # Convert JPEG bytes to numpy array
-            nparr = np.frombuffer(frame, np.uint8)
-            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-            
             if img is None:
                 return False, None, None, 0
             
@@ -105,14 +104,44 @@ class RedBallFollower:
                     self.car.motor.setMotorModel(0, 0)
                     time.sleep(0.1)
                     continue
-                
+
+                # Decode JPEG bytes into an image for processing/display
+                nparr = np.frombuffer(frame, np.uint8)
+                img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+                if img is None:
+                    print("Failed to decode frame, stopping...")
+                    self.car.motor.setMotorModel(0, 0)
+                    time.sleep(0.1)
+                    continue
+
                 # Detect red ball
-                found, ball_x, ball_y, area = self.detect_red_ball(frame)
+                found, ball_x, ball_y, area = self.detect_red_ball(img)
                 
                 if not found:
                     # Ball not found - stop the robot
                     print("Red ball not detected - stopping...")
                     self.car.motor.setMotorModel(0, 0)
+                # Display the current frame with overlays (if enabled)
+                if self.show_window:
+                    display_img = img.copy()
+                    height, width = display_img.shape[:2]
+                    cv2.line(display_img, (width // 2, 0), (width // 2, height), (255, 255, 255), 1)
+
+                    if found:
+                        cv2.circle(display_img, (ball_x, ball_y), 12, (0, 255, 0), 2)
+                        cv2.putText(display_img, f"area={area:.0f}", (10, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                    else:
+                        cv2.putText(display_img, "No red ball", (10, 30),
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+
+                    cv2.imshow("Red Ball Follower", display_img)
+                    key = cv2.waitKey(1) & 0xFF
+                    if key == ord('q'):
+                        raise KeyboardInterrupt
+
+                if not found:
                     time.sleep(0.1)
                     continue
                 
@@ -150,6 +179,8 @@ class RedBallFollower:
         self.camera.stop_stream()
         self.camera.close()
         self.car.close()
+        if self.show_window:
+            cv2.destroyAllWindows()
         print("Cleanup complete.")
 
 def main():
