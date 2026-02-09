@@ -13,6 +13,8 @@ class RedBallFollower:
         print("Initializing Red Ball Follower...")
         self.camera = Camera(stream_size=(640, 480))  # Initialize camera with stream size
         self.car = Car()  # Initialize car (motors)
+        # Ensure lift servo is at its initial angle (not blocking camera)
+        self.car.servo.setServoAngle('1', 90)
         
         # Start camera streaming
         print("Starting camera stream...")
@@ -34,6 +36,7 @@ class RedBallFollower:
         self.center_tolerance = 50  # Pixels from center to consider "centered"
         self.base_speed = 1500  # Base forward speed
         self.turn_speed = 2000  # Turn speed when ball is off-center
+        self.stop_distance_cm = 5  # Stop if ultrasonic distance <= this value
 
         # Display window (set to False for headless runs)
         self.show_window = True
@@ -90,7 +93,7 @@ class RedBallFollower:
             return False, None, None, 0
     
     def follow_ball(self):
-        """Main loop to follow the red ball."""
+        """Main loop to follow the red ball and stop at close range."""
         frame_width = 640  # Camera stream width
         center_x_target = frame_width // 2  # Center of the frame
         
@@ -111,6 +114,14 @@ class RedBallFollower:
 
                 if img is None:
                     print("Failed to decode frame, stopping...")
+                    self.car.motor.setMotorModel(0, 0)
+                    time.sleep(0.1)
+                    continue
+
+                # Stop if the ultrasonic sensor detects the target is too close
+                distance = self.car.sonic.get_distance()
+                if distance != 0 and distance <= self.stop_distance_cm:
+                    print(f"Stop: ultrasonic distance {distance:.1f} cm")
                     self.car.motor.setMotorModel(0, 0)
                     time.sleep(0.1)
                     continue
